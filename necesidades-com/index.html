@@ -1,0 +1,587 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FOM · FEEDEX — Análisis de Necesidades</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #f5f5f7;
+    --surface: #ffffff;
+    --border: #d2d2d7;
+    --border-light: #e8e8ed;
+    --text-primary: #1d1d1f;
+    --text-secondary: #6e6e73;
+    --text-tertiary: #aeaeb2;
+    --accent: #0071e3;
+    --accent-light: #f0f6ff;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'SF Pro Text', sans-serif;
+    background: var(--bg);
+    color: var(--text-primary);
+    line-height: 1.5;
+    font-size: 15px;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* NAV */
+  .nav {
+    position: sticky; top: 0; z-index: 100;
+    background: rgba(245,245,247,0.85);
+    backdrop-filter: saturate(180%) blur(20px);
+    -webkit-backdrop-filter: saturate(180%) blur(20px);
+    border-bottom: 1px solid var(--border-light);
+  }
+  .nav-inner {
+    max-width: 860px; margin: 0 auto; padding: 0 32px;
+    display: flex; align-items: center; gap: 2px; height: 48px;
+    overflow-x: auto;
+  }
+  .nav-inner::-webkit-scrollbar { display: none; }
+  .nav-link {
+    font-size: 12px; font-weight: 500; color: var(--text-secondary);
+    padding: 5px 12px; border-radius: 6px; text-decoration: none;
+    white-space: nowrap; transition: color 0.15s, background 0.15s; flex-shrink: 0;
+  }
+  .nav-link:hover { color: var(--text-primary); background: rgba(0,0,0,0.04); }
+  .nav-link.active { color: var(--text-primary); background: rgba(0,0,0,0.06); }
+
+  /* WRAPPER */
+  .page { max-width: 860px; margin: 0 auto; padding: 56px 32px 80px; }
+  @media (max-width: 600px) { .page { padding: 40px 20px 60px; } }
+
+  /* HERO */
+  .hero { margin-bottom: 48px; }
+  .eyebrow {
+    font-size: 12px; font-weight: 600; letter-spacing: 0.04em;
+    text-transform: uppercase; color: var(--accent); margin-bottom: 14px;
+  }
+  .hero h1 {
+    font-size: clamp(32px, 5vw, 52px); font-weight: 600;
+    letter-spacing: -0.03em; line-height: 1.06;
+    color: var(--text-primary); margin-bottom: 16px;
+  }
+  .hero-desc {
+    font-size: 16px; color: var(--text-secondary);
+    max-width: 580px; line-height: 1.65; margin-bottom: 28px;
+  }
+  .meta-row { display: flex; gap: 32px; flex-wrap: wrap; }
+  .meta-item { display: flex; flex-direction: column; gap: 3px; }
+  .meta-label { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-tertiary); }
+  .meta-value { font-size: 13px; font-weight: 500; color: var(--text-secondary); }
+
+  /* SECTION */
+  .section { background: var(--surface); border-radius: 16px; border: 1px solid var(--border-light); margin-bottom: 16px; overflow: hidden; }
+  .section-head {
+    padding: 22px 28px; border-bottom: 1px solid var(--border-light);
+    display: flex; align-items: center; gap: 14px;
+  }
+  .section-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+  .section-title { font-size: 15px; font-weight: 600; color: var(--text-primary); letter-spacing: -0.015em; }
+  .section-subtitle { font-size: 12px; color: var(--text-tertiary); margin-top: 2px; }
+
+  /* SUMMARY TABLE */
+  table { width: 100%; border-collapse: collapse; }
+  thead th {
+    padding: 10px 24px; text-align: left;
+    font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em;
+    color: var(--text-tertiary); border-bottom: 1px solid var(--border-light);
+  }
+  tbody td { padding: 12px 24px; font-size: 13px; color: var(--text-secondary); border-bottom: 1px solid var(--border-light); }
+  tbody tr:last-child td { border-bottom: none; }
+  tbody tr:hover td { background: #fafafa; }
+  .td-name { font-weight: 500; color: var(--text-primary); }
+
+  /* BADGE */
+  .badge {
+    display: inline-block; padding: 2px 9px; border-radius: 20px;
+    font-size: 11px; font-weight: 600; letter-spacing: 0.01em;
+  }
+  .badge-blue   { background: #e8f1fb; color: #0071e3; }
+  .badge-teal   { background: #e5f4f4; color: #0a7b7b; }
+  .badge-purple { background: #f0eaf8; color: #6b3fa0; }
+  .badge-grey   { background: #f0f0f2; color: #6e6e73; }
+  .badge-red    { background: #fdecea; color: #c0392b; }
+
+  /* NEED ITEMS */
+  .need { padding: 24px 28px; border-bottom: 1px solid var(--border-light); }
+  .need:last-child { border-bottom: none; }
+  .need-title-row { display: flex; align-items: center; gap: 12px; margin-bottom: 14px; }
+  .need-n {
+    width: 22px; height: 22px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
+    font-size: 10px; font-weight: 700; flex-shrink: 0;
+    background: #e8f1fb; border: 1px solid #c5daf5; color: #4aa3f0;
+  }
+  .need-name { font-size: 14px; font-weight: 600; color: var(--text-primary); letter-spacing: -0.01em; }
+
+  .need-block { margin-bottom: 12px; }
+  .need-block:last-child { margin-bottom: 0; }
+  .block-label {
+    font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 6px;
+  }
+  .label-ask  { color: var(--text-tertiary); }
+  .label-resp { color: #0a7b7b; }
+
+  .need-text { font-size: 13px; color: var(--text-secondary); line-height: 1.65; }
+  .need-text + .need-text { margin-top: 6px; }
+
+  /* BULLET LIST */
+  .resp-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 7px; }
+  .resp-list li { display: flex; align-items: flex-start; gap: 8px; font-size: 13px; color: var(--text-secondary); line-height: 1.65; }
+  .resp-list li::before { content: ''; width: 5px; height: 5px; border-radius: 50%; background: #0071e3; flex-shrink: 0; margin-top: 6px; opacity: 0.5; }
+
+  /* CALLOUT */
+  .callout {
+    padding: 11px 14px; border-radius: 9px; font-size: 13px;
+    color: var(--text-secondary); line-height: 1.6; margin-top: 8px;
+  }
+  .callout-warn    { background: #fff8ed; }
+
+  /* CODE */
+  .code-block {
+    background: #f5f5f7; border: 1px solid var(--border-light); border-radius: 8px;
+    padding: 12px 14px; margin-top: 8px;
+    font-family: 'SF Mono', 'Fira Code', monospace; font-size: 11px;
+    color: var(--text-primary); line-height: 1.7; overflow-x: auto; white-space: pre;
+  }
+
+  /* OPEN QUESTION */
+  .open-q {
+    margin-top: 8px; padding: 10px 14px; border-radius: 8px;
+    background: #fff8ed; border-left: 3px solid #f0a500;
+    font-size: 12px; color: var(--text-secondary); line-height: 1.6;
+  }
+  .open-q strong { color: var(--text-primary); }
+
+  /* FOOTER */
+  .footer { text-align: center; padding-top: 40px; border-top: 1px solid var(--border-light); }
+  .footer p { font-size: 12px; color: var(--text-tertiary); }
+
+  /* Fade in */
+  @keyframes fadeUp { from { opacity:0; transform:translateY(12px); } to { opacity:1; transform:translateY(0); } }
+  .hero  { animation: fadeUp 0.5s ease both; }
+  .section { animation: fadeUp 0.5s ease both; }
+  .section:nth-of-type(1) { animation-delay: 0.05s; }
+  .section:nth-of-type(2) { animation-delay: 0.1s; }
+  .section:nth-of-type(3) { animation-delay: 0.15s; }
+  .section:nth-of-type(4) { animation-delay: 0.2s; }
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <div class="nav-inner">
+    <a class="nav-link active" href="#resumen">Resumen</a>
+    <a class="nav-link" href="#origen">Origen del dato</a>
+    <a class="nav-link" href="#observabilidad">Observabilidad</a>
+    <a class="nav-link" href="#gobernanza">Gobernanza</a>
+  </div>
+</nav>
+
+<div class="page">
+
+  <div class="hero">
+    <div class="eyebrow">FOM · FEEDEX</div>
+    <h1>Análisis de Necesidades<br>y Visión</h1>
+    <p class="hero-desc">FOM es el dueño del feed desde negocio, con más de 200M€ de inversión dependiendo de la calidad de los ficheros de producto. El reto central es gestionar expectativas de negocio sin tener control técnico ni sobre el dato ni sobre el proceso de indexación.</p>
+    <div class="meta-row">
+      <div class="meta-item">
+        <span class="meta-label">Inversión dependiente</span>
+        <span class="meta-value">&gt;200M€</span>
+      </div>
+      <div class="meta-item">
+        <span class="meta-label">Propietario</span>
+        <span class="meta-value">FOM (negocio)</span>
+      </div>
+      <div class="meta-item">
+        <span class="meta-label">Control técnico</span>
+        <span class="meta-value"><span class="badge badge-red">Sin control directo</span></span>
+      </div>
+      <div class="meta-item">
+        <span class="meta-label">Necesidades</span>
+        <span class="meta-value">3 bloques · 15 puntos</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- RESUMEN -->
+  <div id="resumen" class="section">
+    <div class="section-head">
+      <div class="section-dot" style="background:#0071e3;"></div>
+      <div>
+        <div class="section-title">Resumen de necesidades</div>
+        <div class="section-subtitle">Mapa de los 15 requerimientos por bloque</div>
+      </div>
+    </div>
+    <table>
+      <thead><tr><th>Necesidad</th><th>Bloque</th></tr></thead>
+      <tbody>
+        <tr><td class="td-name">Origen del dato por campo</td><td><span class="badge badge-blue">Origen del Dato</span></td></tr>
+        <tr><td class="td-name">Visión de los procesos internos de FEEDEX</td><td><span class="badge badge-blue">Origen del Dato</span></td></tr>
+        <tr><td class="td-name">Visibilidad sobre el filtrado de productos</td><td><span class="badge badge-blue">Origen del Dato</span></td></tr>
+        <tr><td class="td-name">Catálogo de referencia (#productos)</td><td><span class="badge badge-blue">Origen del Dato</span></td></tr>
+        <tr><td class="td-name">Esquema versionado del feed</td><td><span class="badge badge-blue">Origen del Dato</span></td></tr>
+        <tr><td class="td-name">Caché configurable y opción de fallback</td><td><span class="badge badge-blue">Origen del Dato</span></td></tr>
+        <tr><td class="td-name">Métricas de ejecución</td><td><span class="badge badge-teal">Observabilidad</span></td></tr>
+        <tr><td class="td-name">Logs por ejecución</td><td><span class="badge badge-teal">Observabilidad</span></td></tr>
+        <tr><td class="td-name">Logs por producto</td><td><span class="badge badge-teal">Observabilidad</span></td></tr>
+        <tr><td class="td-name">Errores estructurados</td><td><span class="badge badge-teal">Observabilidad</span></td></tr>
+        <tr><td class="td-name">Número de reglas/filtros aplicados por ejecución</td><td><span class="badge badge-teal">Observabilidad</span></td></tr>
+        <tr><td class="td-name">Versionado del feed y trazabilidad histórica</td><td><span class="badge badge-purple">Gobernanza</span></td></tr>
+        <tr><td class="td-name">Owner de campo y política de cambios</td><td><span class="badge badge-purple">Gobernanza</span></td></tr>
+        <tr><td class="td-name">Versionado del modelo de datos</td><td><span class="badge badge-purple">Gobernanza</span></td></tr>
+        <tr><td class="td-name">Data Dictionary oficial</td><td><span class="badge badge-purple">Gobernanza</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- BLOQUE 1 -->
+  <div id="origen" class="section">
+    <div class="section-head">
+      <div class="section-dot" style="background:#0071e3;"></div>
+      <div>
+        <div class="section-title">Bloque 1 — Origen del Dato</div>
+        <div class="section-subtitle">Trazabilidad de fuentes, procesos, filtrado, catálogo y caché</div>
+      </div>
+    </div>
+
+    <div class="need">
+      <div class="need-title-row">
+        <div class="need-n">1</div>
+        <div class="need-name">Origen del dato por campo</div>
+      </div>
+      <div class="need-block">
+        <div class="block-label label-ask">Petición</div>
+        <p class="need-text">Es necesario conocer de dónde proviene cada campo incluido en los feeds. Trazabilidad completa desde la fuente original (Product Core / IOP Producto, transformaciones intermedias, etc.) hasta el campo final exportado al canal. Sin esta visibilidad, FOM no puede responder ante preguntas de negocio sobre la fiabilidad de un dato concreto.</p>
+      </div>
+      <div class="need-block">
+        <div class="block-label label-resp">Respuesta</div>
+        <ul class="resp-list">
+          <li><span><strong>Proceso de confirmación de datos:</strong> primero <strong>Feedex</strong> consulta y consume la información; después el <strong>Proveedor del dato</strong> (Producto, KPIs, Maestros) la suministra y valida.</span></li>
+          <li><span><strong>Fuentes de datos:</strong>
+            <ul class="resp-list" style="margin-top:6px;">
+              <li><span>Datos de producto: <a href="https://iopdoc.cloud.inditex.com/69b034a4fd20291c2aa5778d/product-current-data-model" target="_blank" style="color:#0071e3; text-decoration:none; border-bottom:1px solid rgba(0,113,227,0.3);">Modelo de datos de producto</a></span></li>
+              <li><span>Datos de KPI: Modelo de datos de KPI con proveedores pendiente (podemos ofrecerlo)</span></li>
+            </ul>
+          </span></li>
+          <li><span><strong>Fiabilidad:</strong> Los datos son utilizados en parrillas, buscador y todos los canales de encontrabilidad. La indexación es en tiempo real y la exportación es configurable.</span></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="need">
+      <div class="need-title-row">
+        <div class="need-n">2</div>
+        <div class="need-name">Visión de los procesos internos de FEEDEX</div>
+      </div>
+      <div class="need-block">
+        <div class="block-label label-ask">Petición</div>
+        <p class="need-text">FOM necesita entender qué ocurre dentro de FEEDEX durante la generación del feed: qué pasos se ejecutan, en qué orden, qué sistemas se invocan y qué transformaciones se aplican sobre el dato antes de llegar al canal destino. Sin este conocimiento, es imposible diagnosticar problemas de forma autónoma.</p>
+      </div>
+      <div class="need-block">
+        <div class="block-label label-resp">Respuesta</div>
+        <ul class="resp-list">
+          <li><span>Se puede proveer un <strong>diagrama de flujo de los steps de generación del feed</strong> para que el equipo gane conocimiento del servicio.</span></li>
+        </ul>
+        <div class="open-q"><strong>Pregunta abierta:</strong> ¿Se necesita por alguna razón concreta?</div>
+      </div>
+    </div>
+
+    <div class="need">
+      <div class="need-title-row">
+        <div class="need-n">3</div>
+        <div class="need-name">Visibilidad sobre el filtrado de productos</div>
+      </div>
+      <div class="need-block">
+        <div class="block-label label-ask">Petición</div>
+        <p class="need-text">Es necesario saber si FEEDEX aplica filtros sobre el catálogo antes de generar el feed y cuáles son los criterios: por marca, mercado, estado del producto, stock, etc. FOM debe poder validar que los productos que deberían estar realmente están incluidos.</p>
+      </div>
+      <div class="need-block">
+        <div class="block-label label-resp">Respuesta</div>
+        <ul class="resp-list">
+          <li><span>La definición del feed (query: tienda, mercado, etc.) se define desde FOM y es accesible.</span></li>
+          <li><span>Las reglas de negocio están en la plantilla:</span></li>
+        </ul>
+        <div class="code-block">{
+  "name": "fom-template_product-tags-uk-en.xml",
+  "weight": 1,
+  "enabled": true,
+  "type": "FREEMARKER",
+  "exportIdentifierDefinition": {
+    "entityName": "COMMERCIAL_COMPONENT",
+    "groupingBy": ["mocacoReferenceAndBrand"],
+    "groupByFilters": [{ "query": "storeId:10706 AND language:en-GB" }]
+  }
+}</div>
+        <ul class="resp-list" style="margin-top:10px;">
+          <li><span>Se puede ofrecer trazabilidad sobre los templates y reglas de filtrado en <span class="badge badge-grey">Snowflake</span>.</span></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="need">
+      <div class="need-title-row">
+        <div class="need-n">4</div>
+        <div class="need-name">Catálogo de referencia (#productos)</div>
+      </div>
+      <div class="need-block">
+        <div class="block-label label-ask">Petición</div>
+        <p class="need-text">FOM necesita un catálogo de referencia como fuente de verdad para validar los feeds: total de productos esperados, segmentación por marca/mercado y criterios de inclusión. Sin esta referencia no es posible detectar automáticamente si un feed tiene menos productos de los esperados.</p>
+      </div>
+      <div class="need-block">
+        <div class="block-label label-resp">Respuesta</div>
+        <ul class="resp-list">
+          <li><span>El catálogo de referencia se puede obtener haciendo una generación y exportación sin reglas de filtrado.</span></li>
+          <li><span><strong>Advertencia:</strong> El contenido es vivo (se eliminan productos, cambia la disponibilidad, se despublica, etc.).</span></li>
+          <li><span>La exportación puede ser pesada.</span></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="need">
+      <div class="need-title-row">
+        <div class="need-n">5</div>
+        <div class="need-name">Esquema versionado del feed</div>
+      </div>
+      <div class="need-block">
+        <div class="block-label label-ask">Petición</div>
+        <p class="need-text">El esquema de campos debe estar versionado: qué versión está activa en producción, qué cambios se introdujeron en cada versión y cuándo entraron en vigor. Imprescindible para gestionar la evolución sin romper integraciones existentes.</p>
+      </div>
+      <div class="need-block">
+        <div class="block-label label-resp">Respuesta</div>
+        <ul class="resp-list">
+          <li><span>Con el auditado de versiones de la plantilla del feed, FOM debería ser autónomo para hacer estas investigaciones.</span></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="need">
+      <div class="need-title-row">
+        <div class="need-n">6</div>
+        <div class="need-name">Caché configurable y opción de fallback</div>
+      </div>
+      <div class="need-block">
+        <div class="block-label label-ask">Petición</div>
+        <p class="need-text">Se necesita saber si existe caché en el proceso de generación, cómo está configurada (TTL, invalidación) y qué mecanismo de fallback se activa cuando la fuente primaria no está disponible.</p>
+      </div>
+      <div class="need-block">
+        <div class="block-label label-resp">Respuesta</div>
+        <ul class="resp-list">
+          <li><span><strong>No hay caché en Feedex.</strong> No se ha implementado ya que implicaría almacenar archivos de gran tamaño.</span></li>
+          <li><span>En caso de degradación, Feedex dispone de alertas configuradas para notificar al equipo responsable.</span></li>
+          <li><span>Los feeds se generan una vez por hora, lo que hace innecesaria la caché.</span></li>
+          <li><span>En <span class="badge badge-grey">Amanda</span> se puede encontrar el último feed generado para reutilizarse si fuera necesario.</span></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- BLOQUE 2 -->
+  <div id="observabilidad" class="section">
+    <div class="section-head">
+      <div class="section-dot" style="background:#0a7b7b;"></div>
+      <div>
+        <div class="section-title">Bloque 2 — Observabilidad</div>
+        <div class="section-subtitle">Métricas, logs de ejecución, logs por producto y errores</div>
+      </div>
+    </div>
+
+    <div class="need">
+      <div class="need-title-row">
+        <div class="need-n">7</div>
+        <div class="need-name">Métricas de ejecución</div>
+      </div>
+      <div class="need-block">
+        <div class="block-label label-ask">Petición</div>
+        <p class="need-text">FOM necesita métricas agregadas: número de ejecuciones en un período, tasa de éxito/error, tiempos de generación, volumen de productos procesados y tendencias a lo largo del tiempo.</p>
+      </div>
+      <div class="need-block">
+        <div class="block-label label-resp">Respuesta</div>
+        <ul class="resp-list">
+          <li><span>Ya existe un <strong>dashboard personalizado con un área específica para FOM</strong> desarrollado por el equipo de Feedex: <a href="https://inditex.grafana.net/d/feedex-metrics-scrape/feedex-metrics-scrape?orgId=1&refresh=5m&var-minstep=15s&from=now-12h&to=now&timezone=browser&var-Environment=pro&var-Platform=Openshift-Meccano%20Interxion%202&var-Platform=Openshift-Meccano%20Telecity%202&var-Tenant=za&var-jirakey=$__all&var-Slot=$__all&var-platformId=$__all&var-jiraname=$__all" target="_blank" style="color:#0071e3; text-decoration:none; border-bottom:1px solid rgba(0,113,227,0.3);">Grafana</a>.</span></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="need">
+      <div class="need-title-row">
+        <div class="need-n">8</div>
+        <div class="need-name">Logs por ejecución</div>
+      </div>
+      <div class="need-block">
+        <div class="block-label label-ask">Petición</div>
+        <p class="need-text">Cada ejecución debe generar un log estructurado y accesible: fecha/hora de inicio y fin, resultado (éxito/error), número de productos procesados, canales notificados y cualquier incidencia detectada.</p>
+      </div>
+      <div class="need-block">
+        <div class="block-label label-resp">Respuesta</div>
+        <ul class="resp-list">
+          <li><span>En el panel de <a href="https://inditex.grafana.net/d/feedex-metrics-scrape/feedex-metrics-scrape?orgId=1&refresh=5m&var-minstep=15s&from=now-12h&to=now&timezone=browser&var-Environment=pro&var-Platform=Openshift-Meccano%20Interxion%202&var-Platform=Openshift-Meccano%20Telecity%202&var-Tenant=za&var-jirakey=$__all&var-Slot=$__all&var-platformId=$__all&var-jiraname=$__all" target="_blank" style="color:#0071e3; text-decoration:none; border-bottom:1px solid rgba(0,113,227,0.3);">Grafana</a> hay disponible: fechas de inicio y fin, número de productos, éxito o error de la generación, y más.</span></li>
+        </ul>
+        <div class="open-q"><strong>Propuesta:</strong> Revisar el panel actual y transmitir necesidades adicionales si las hubiera.</div>
+      </div>
+    </div>
+
+    <div class="need">
+      <div class="need-title-row">
+        <div class="need-n">9</div>
+        <div class="need-name">Logs por producto</div>
+      </div>
+      <div class="need-block">
+        <div class="block-label label-ask">Petición</div>
+        <p class="need-text">Además de los logs globales, FOM necesita trazar qué ha ocurrido con un producto concreto en un feed: si fue incluido o excluido, qué transformaciones se le aplicaron y si generó algún error.</p>
+      </div>
+      <div class="need-block">
+        <div class="block-label label-resp">Respuesta</div>
+        <ul class="resp-list">
+          <li><span>No se va a ofrecer esta información: Feedex maneja un volumen muy alto de datos y está centrado en el éxito o fallo de la generación al completo.</span></li>
+          <li><span>Para este nivel de granularidad, hay que consultar la información del producto directamente en la BD de Feedex y revisar la plantilla del feed.</span></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="need">
+      <div class="need-title-row">
+        <div class="need-n">10</div>
+        <div class="need-name">Errores estructurados</div>
+      </div>
+      <div class="need-block">
+        <div class="block-label label-ask">Petición</div>
+        <p class="need-text">Los errores durante la generación o exportación deben estar categorizados y ser accionables: tipo de error, campo afectado, producto afectado, severidad e impacto estimado.</p>
+      </div>
+      <div class="need-block">
+        <div class="block-label label-resp">Respuesta</div>
+        <ul class="resp-list">
+          <li><span>La traza de error está actualmente disponible a través de <span class="badge badge-grey">Loki</span>. Si existen casos concretos donde el error no sea indicativo, se puede estudiar la mejor solución.</span></li>
+          <li><span>Para errores más estructurados, FOM podría llevar parte de su lógica base a una librería en Java.</span></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="need">
+      <div class="need-title-row">
+        <div class="need-n">11</div>
+        <div class="need-name">Número de reglas/filtros aplicados por ejecución</div>
+      </div>
+      <div class="need-block">
+        <div class="block-label label-ask">Petición</div>
+        <p class="need-text">FOM necesita saber cuántas reglas y filtros se han aplicado en cada ejecución, qué productos han sido afectados y si el comportamiento es el esperado.</p>
+      </div>
+      <div class="need-block">
+        <div class="block-label label-resp">Respuesta</div>
+        <ul class="resp-list">
+          <li><span>Contestado en puntos anteriores. Ver <strong>#3 (filtrado)</strong> y <strong>#7 (métricas de ejecución)</strong>.</span></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- BLOQUE 3 -->
+  <div id="gobernanza" class="section">
+    <div class="section-head">
+      <div class="section-dot" style="background:#6b3fa0;"></div>
+      <div>
+        <div class="section-title">Bloque 3 — Gobernanza del Modelo</div>
+        <div class="section-subtitle">Versionado, ownership de campo, modelo de datos y Data Dictionary</div>
+      </div>
+    </div>
+
+    <div class="need">
+      <div class="need-title-row">
+        <div class="need-n">12</div>
+        <div class="need-name">Versionado del feed y trazabilidad histórica</div>
+      </div>
+      <div class="need-block">
+        <div class="block-label label-ask">Petición</div>
+        <p class="need-text">Cada feed generado debe tener un identificador de versión que permita recuperar su estado en un momento concreto del pasado, comparar versiones y auditar cambios.</p>
+      </div>
+      <div class="need-block">
+        <div class="block-label label-resp">Respuesta</div>
+        <ul class="resp-list">
+          <li><span>Contestado en puntos anteriores vía <span class="badge badge-grey">Snowflake</span>.</span></li>
+        </ul>
+        <div class="open-q"><strong>Pregunta abierta:</strong> ¿Tendría sentido subir los feeds a Azure además de a Amanda?</div>
+      </div>
+    </div>
+
+    <div class="need">
+      <div class="need-title-row">
+        <div class="need-n">13</div>
+        <div class="need-name">Owner de campo y política de cambios</div>
+      </div>
+      <div class="need-block">
+        <div class="block-label label-ask">Petición</div>
+        <p class="need-text">Cada campo del feed debe tener un propietario definido y debe existir una política formal para gestionar cambios: quién los puede solicitar, cómo se aprueban y con qué preaviso se comunican a los consumidores.</p>
+      </div>
+      <div class="need-block">
+        <div class="block-label label-resp">Respuesta</div>
+        <ul class="resp-list">
+          <li><span>El Data Dictionary da visibilidad del origen de los datos.</span></li>
+          <li><span>La transformación siempre es responsabilidad de FOM, que define las lógicas de negocio.</span></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="need">
+      <div class="need-title-row">
+        <div class="need-n">14</div>
+        <div class="need-name">Versionado del modelo de datos</div>
+      </div>
+      <div class="need-block">
+        <div class="block-label label-ask">Descripción</div>
+        <p class="need-text">El modelo de datos del feed (estructura, tipos, campos obligatorios/opcionales) debe estar versionado de forma independiente al versionado del feed generado, permitiendo gestionar la evolución sin romper integraciones existentes.</p>
+      </div>
+      <div class="need-block">
+        <div class="block-label label-resp">Respuesta</div>
+        <ul class="resp-list">
+          <li><span>Este versionado se puede hacer en <span class="badge badge-grey">Snowflake</span> para tener un histórico de cambios aplicados a los feeds consultable como auditoría.</span></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="need">
+      <div class="need-title-row">
+        <div class="need-n">15</div>
+        <div class="need-name">Data Dictionary oficial</div>
+      </div>
+      <div class="need-block">
+        <div class="block-label label-ask">Descripción</div>
+        <p class="need-text">Diccionario de datos oficial y actualizado que describa cada campo del feed: nombre, tipo, descripción funcional, origen técnico, propietario, reglas de validación y ejemplos de valores. Es la base sobre la que se sustenta el resto de la gobernanza.</p>
+      </div>
+      <div class="need-block">
+        <div class="block-label label-resp">Respuesta</div>
+        <ul class="resp-list">
+          <li><span>✓ Confirmado. Se proveerá el Data Dictionary oficial.</span></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer">
+    <p>FOM · FEEDEX — Análisis de Necesidades y Visión · 2026</p>
+  </div>
+
+</div>
+
+<script>
+  const sections = ['resumen','origen','observabilidad','gobernanza'];
+  window.addEventListener('scroll', () => {
+    let current = '';
+    sections.forEach(id => {
+      const el = document.getElementById(id);
+      if (el && window.scrollY >= el.offsetTop - 70) current = id;
+    });
+    document.querySelectorAll('.nav-link').forEach(link => {
+      link.classList.toggle('active', link.getAttribute('href') === '#' + current);
+    });
+  });
+</script>
+</body>
+</html>
